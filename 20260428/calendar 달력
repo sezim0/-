@@ -1,0 +1,44 @@
+class Calendar:
+    def __init__(self, year=2026): 
+        self.year = year
+        self.days_in_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        self.month_name = ["", "1월", "2월", "3월", "4월", "5월", "6월",
+                           "7월", "8월", "9월", "10월", "11월", "12월"]
+       
+        # 0=일 1=월 2=화 3=수 4=목 5=금 6=토
+        self._base_start_day = 4
+
+    def print_month_calendar(self, month):
+        if not (1 <= month <= 12):
+            print("잘못된 월을 입력하셨습니다. 1부터 12 사이의 값을 입력해주세요.")
+            return
+
+        start_day_for_month = self._base_start_day
+        for m in range(1, month):
+            start_day_for_month = (start_day_for_month + self.days_in_month[m]) % 7
+
+        print(f"      {self.month_name[month]}")
+        print(" 일  월  화  수  목  금  토")
+
+        print("   " * start_day_for_month, end="")
+
+        col = start_day_for_month
+        for day in range(1, self.days_in_month[month] + 1):
+            print(f"{day:3}", end="")
+            col += 1
+            if col == 7:
+                print()
+                col = 0
+        print()
+
+my_calendar = Calendar()
+
+while True:
+    try:
+        user_month_input = input("월을 입력하세요 (종료하려면 'q'를 입력): ")
+        if user_month_input.lower() == 'q':
+            break
+        month_to_display = int(user_month_input)
+        my_calendar.print_month_calendar(month_to_display)
+    except ValueError:
+        print("유효한 숫자를 입력하거나 'q'를 입력하세요.")
