@@ -1,0 +1,33 @@
+import random
+
+def make_mat(n):
+    mat = []
+    for i in range(n):
+        row = []
+        for j in range(n):
+            row.append(random.randint(1, n * n * 10 - 1))
+        mat.append(row)
+    return mat
+
+def print_mat(mat, n):
+    for i in range(n):
+        for j in range(n):
+            print(f"{mat[i][j]:5d}", end="")
+        print()
+
+n = int(input("N을 입력하세요 (1 < N <= 5): "))
+
+matrix = make_mat(n)
+
+print("\n--- Original ---")
+print_mat(matrix, n)
+
+trans = []
+for i in range(n):
+    row = []
+    for j in range(n):
+        row.append(matrix[j][i])
+    trans.append(row)
+
+print("\n--- Transposed ---")
+print_mat(trans, n)
