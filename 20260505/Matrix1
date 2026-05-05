@@ -1,0 +1,44 @@
+import random
+
+def make_mat(n):
+    mat = []
+    for i in range(n):
+        row = []
+        for j in range(n):
+            row.append(random.randint(1, n * n * 10 - 1))
+        mat.append(row)
+    return mat
+
+def print_mat(mat, n):
+    for i in range(n):
+        for j in range(n):
+            print(f"{mat[i][j]:5d}", end="")
+        print()
+
+n = int(input("N을 입력하세요 (1 < N <= 5): "))
+
+a = make_mat(n)
+b = make_mat(n)
+c = make_mat(n)
+
+print("\n[ A ]")
+print_mat(a, n)
+print("\n[ B ]")
+print_mat(b, n)
+print("\n[ C ]")
+print_mat(c, n)
+
+
+ans = []
+for i in range(n):
+    row = []
+    for j in range(n):
+        val = 0
+        for k in range(n):
+            val += a[i][k] * b[k][j]
+        val += c[i][j]
+        row.append(val)
+    ans.append(row)
+
+print("\n[ Result ]")
+print_mat(ans, n)
