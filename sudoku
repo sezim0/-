@@ -1,0 +1,127 @@
+import random
+
+def make_short_sudoku(holes=40):
+    base = 3
+    side = 9
+    
+    # 1. The Math Trick: Creates a valid shifted pattern for a Sudoku grid
+    def pattern(r, c): 
+        return (base * (r % base) + r // base + c) % side
+
+    # 2. Randomize rows, columns, and the numbers 1-9 so every board is unique
+    r_base = range(base) 
+    rows = [g * base + r for g in random.sample(r_base, len(r_base)) for r in random.sample(r_base, len(r_base))] 
+    cols = [g * base + c for g in random.sample(r_base, len(r_base)) for c in random.sample(r_base, len(r_base))]
+    nums = random.sample(range(1, side + 1), side)
+
+    # 3. Build the actual completed board using the pattern
+    board = [[nums[pattern(r, c)] for c in cols] for r in rows]
+
+    # 4. Poke holes in it to make it a puzzle
+    for _ in range(holes):
+        board[random.randint(0, 8)][random.randint(0, 8)] = 0
+        
+    return board
+
+# --- Print the Board ---
+for row in make_short_sudoku():
+    print(" ".join(str(n) if n != 0 else "." for n in row))
+
+
+
+
+
+
+
+
+
+
+
+#second version with backtracking solver and more control over difficulty
+
+    import random
+
+# --- STEP 1: The Rule Checker ---
+def is_valid(board, row, col, num):
+    """Checks if a number is allowed in a specific row, column, and 3x3 box."""
+    # 1. Check the row
+    if num in board[row]:
+        return False
+        
+    # 2. Check the column
+    if num in [board[i][col] for i in range(9)]:
+        return False
+        
+    # 3. Check the 3x3 square
+    start_row = 3 * (row // 3)
+    start_col = 3 * (col // 3)
+    for i in range(3):
+        for j in range(3):
+            if board[start_row + i][start_col + j] == num:
+                return False
+                
+    return True # If it passes all checks, it's a valid move!
+
+
+# --- STEP 2: The Backtracking Solver ---
+def fill_board(board):
+    """Uses recursion to fill the board with valid numbers."""
+    for row in range(9):
+        for col in range(9):
+            if board[row][col] == 0: # Find an empty spot
+                
+                # Try numbers 1-9 in random order (so we get a new puzzle every time)
+                numbers = list(range(1, 10))
+                random.shuffle(numbers)
+                
+                for num in numbers:
+                    if is_valid(board, row, col, num):
+                        board[row][col] = num # Guess the number
+                        
+                        # Recursion: Try to fill the rest of the board with this guess
+                        if fill_board(board):
+                            return True 
+                            
+                        # If the guess leads to a dead end, BACKTRACK!
+                        board[row][col] = 0 
+                return False # Trigger backtracking if no numbers work
+    return True # The board is completely full
+
+
+# --- STEP 3: The Puzzle Generator ---
+def make_sudoku(holes=40):
+    """Creates a full board, then removes numbers to make a puzzle."""
+    # Create a 9x9 grid of zeros
+    board = [[0 for _ in range(9)] for _ in range(9)]
+    
+    # Fill the board completely with a valid solution
+    fill_board(board)
+    
+    # Remove random numbers to create the puzzle
+    while holes > 0:
+        r = random.randint(0, 8)
+        c = random.randint(0, 8)
+        if board[r][c] != 0: # If there's a number there, remove it
+            board[r][c] = 0
+            holes -= 1
+            
+    return board
+
+
+# --- UTILITY: Print it nicely ---
+def print_board(board):
+    """Prints the board cleanly to the terminal."""
+    for row in board:
+        # Prints numbers, but replaces '0' with a dot for readability
+        print(" ".join(str(num) if num != 0 else "." for num in row))
+
+
+# ==========================================
+# RUN THE CODE
+# ==========================================
+# 40 holes is a good "Medium" difficulty. 
+# Change it to 20 for easy, or 55 for hard.
+my_exam_puzzle = make_sudoku(holes=40)
+
+print("Here is your Sudoku Puzzle:")
+print_board(my_exam_puzzle)
