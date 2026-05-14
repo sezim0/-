@@ -1,3 +1,97 @@
+def is_valid(board, row, col, num):
+    """Checks if 'num' is allowed to be placed at board[row][col]"""
+    # 1. Check if 'num' is in the row
+    for i in range(9):
+        if board[row][i] == num: 
+            return False
+            
+    # 2. Check if 'num' is in the col
+    for i in range(9):
+        if board[i][col] == num: 
+            return False
+            
+    # 3. Check the 3x3 block
+    start_row = (row // 3) * 3
+    start_col = (col // 3) * 3
+    for i in range(3):
+        for j in range(3):
+            if board[start_row + i][start_col + j] == num: 
+                return False
+                
+    return True
+
+
+def solve(board):
+    """The recursive backtracking engine"""
+    # Scan the board row by row, column by column
+    for row in range(9):
+        for col in range(9):
+            
+            # The part you remembered: Find an empty space!
+            if board[row][col] == 0:
+                
+                # Try placing numbers 1 through 9
+                for num in range(1, 10):
+                    if is_valid(board, row, col, num):
+                        
+                        # Place the number
+                        board[row][col] = num  
+                        
+                        # RECURSION: If this path leads to a solution, bubble up True
+                        if solve(board):
+                            return True
+                            
+                        # BACKTRACK: If it didn't work, undo the guess and try next number
+                        board[row][col] = 0
+                        
+                # If numbers 1-9 all fail in this spot, this path is dead. Go back.
+                return False 
+                
+    # If the loops finish and we never find a 0, the board is entirely full!
+    return True 
+
+
+# --- MAIN CODE ---
+if __name__ == "__main__":
+    
+    # The puzzle with 0s representing the empty spaces
+    puzzle = [
+        [5, 3, 0, 0, 7, 0, 0, 0, 0],
+        [6, 0, 0, 1, 9, 5, 0, 0, 0],
+        [0, 9, 8, 0, 0, 0, 0, 6, 0],
+        [8, 0, 0, 0, 6, 0, 0, 0, 3],
+        [4, 0, 0, 8, 0, 3, 0, 0, 1],
+        [7, 0, 0, 0, 2, 0, 0, 0, 6],
+        [0, 6, 0, 0, 0, 0, 2, 8, 0],
+        [0, 0, 0, 4, 1, 9, 0, 0, 5],
+        [0, 0, 0, 0, 8, 0, 0, 7, 9]
+    ]
+
+    print("Original Puzzle:")
+    for row in puzzle:
+        print(*row)
+
+    print("\nSolving...\n")
+    
+    # Run the solver. Because it passes the 'puzzle' list around, 
+    # the list is modified in place during the solve function.
+    if solve(puzzle):
+        print("Here's the solved sudoku:")
+        for row in puzzle:
+            print(*row)
+    else:
+        print("No solution exists for this board.")
+
+
+
+
+
+
+
+
+
+
+#2nd version
 import random
 
 def make_short_sudoku(holes=40):
@@ -37,7 +131,7 @@ for row in make_short_sudoku():
 
 
 
-#second version with backtracking solver and more control over difficulty
+#3rd version with backtracking solver and more control over difficulty
 
     import random
 
